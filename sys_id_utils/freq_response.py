@@ -11,6 +11,7 @@ def freq_response(x, y, sample_freq, freq_cutoff, nperseg, gain_in_db=True, phas
       x   = array of input data
       y   = array of output data
       sample_freq  = sample frequency 
+      cutoff_freq  = cutoff frequency 
       nperseg = length of each segment
 
     Keyword Arguements:
