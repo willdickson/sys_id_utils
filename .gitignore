@@ -1,0 +1,6 @@
+*~
+*.pyc
+*.swp
+*.hdf5
+*.avi
+*.egg-info
