@@ -13,9 +13,9 @@ model_param = {
         'inertia'  : 1.0,
         'damping'  : 10.0,
         'pro_gain' : 50.0,
-        'int_gain' : 500.0,
-        'int_leak' : 2.0, 
-        'noise'    : 0.2,
+        'int_gain' : 0.0001,
+        'int_leak' : 0.0, 
+        'noise'    : 0.0,
         }
 
 # Input signal parameters for chirp function
@@ -37,7 +37,7 @@ input_param_step = {
 nperseg = num_pts/8 # Number of points per segment for power spectral density calculation
 f_cutoff = 8.0      # Cut off frequency for analysis
 
-fit = True  # If True fits parametric model of transfer function to frequency response
+fit = False  # If True fits parametric model of transfer function to frequency response
 controller_fit = 'lpi'
 
 # Create input and output data
