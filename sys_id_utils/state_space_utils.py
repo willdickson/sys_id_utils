@@ -23,16 +23,14 @@ def fit_p_yaw_model(t, inp_sig, out_sig, method='min', op_param=None):
         user_op_param = dict(op_param) 
 
     def diffeq_cost_func(x):
-        print('diffeq_cost_func')
         model_param = {
                 'inertia'  : 1.0, 
                 'damping'  : x[0],
                 'pro_gain' : x[1],
                 }
         sys = simulate.create_p_ss_model(model_param)
-        _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t)
+        _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t, X0=np.array([out_sig[0]]))
         cost = ((out_sig - out_sig_sim)**2).sum()
-        #print(cost)
         return cost
 
     constraints = sp.optimize.LinearConstraint(np.eye(2), np.zeros((2,)), np.full((2,), np.inf))
@@ -113,9 +111,9 @@ def fit_pi_yaw_model(t, inp_sig, out_sig, method='min', op_param=None):
                 'int_gain' : x[2],
                 }
         sys = simulate.create_pi_ss_model(model_param)
-        _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t)
+        dt = t[1] - t[0]
+        _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t, X0=np.array([out_sig[0]]))
         cost = ((out_sig - out_sig_sim)**2).sum()
-        print(cost)
         return cost
 
     constraints = sp.optimize.LinearConstraint(np.eye(3), np.zeros((3,)), np.full((3,), np.inf))
@@ -197,7 +195,7 @@ def fit_lpi_yaw_model(t, inp_sig, out_sig, method='min', op_param=None):
                 'int_leak' : x[3],
                 }
         sys = simulate.create_lpi_ss_model(model_param)
-        _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t)
+        _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t, X0=np.array([out_sig[0]]))
         cost = ((out_sig - out_sig_sim)**2).sum()
         return cost
 
