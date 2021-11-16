@@ -4,7 +4,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import sys_id_utils
 
-num_pts = 10000
+num_pts = 2000 
 t0 = 0.0   # Start time
 t1 = 20.0  # End time
 
@@ -12,10 +12,10 @@ t1 = 20.0  # End time
 model_param = {
         'inertia'  : 1.0,
         'damping'  : 1.0,
-        'pro_gain' : 5.0,
-        'int_gain' : 0.00000001,
+        'pro_gain' : 10.0,
+        'int_gain' : 0.0,
         'int_leak' : 0.0, 
-        'noise'    : 1.0,
+        'noise'    : 0.1,
         }
 
 # Input signal parameters for chirp function
@@ -53,18 +53,44 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     _, gain_db_model, phase_deg_model = sp.signal.bode(ss_model,w=f_model*2.0*np.pi)
 
-# Fit transfer function
+# Fit state space models
 if fit:
-    d_fit, gp_fit, fit_info = sys_id_utils.fit_p_yaw_model(t, input_sig, output_sig)
-    print(d_fit, gp_fit)
-    model_param_fit = {
-            'inertia'  : model_param['inertia'],
-            'damping'  : model_param['inertia']*d_fit,
-            'pro_gain' : model_param['inertia']*gp_fit,
-            'int_gain' : model_param['int_gain'],
-            'int_leak' : 0.0, 
-            'noise'    : 0.0,
-            }
+    if 1:
+        d_fit, gp_fit, fit_info = sys_id_utils.fit_p_yaw_model(t, input_sig, output_sig, op_param={'disp':True})
+        print('fit: d {}, gp {}'.format(d_fit, gp_fit))
+        model_param_fit = {
+                'inertia'  : model_param['inertia'],
+                'damping'  : model_param['inertia']*d_fit,
+                'pro_gain' : model_param['inertia']*gp_fit,
+                'int_gain' : 0.0,
+                'int_leak' : 0.0, 
+                'noise'    : 0.0,
+                }
+    if 0: 
+        d_fit, gp_fit, gi_fit, fit_info = sys_id_utils.fit_pi_yaw_model(t, input_sig, output_sig, op_param={'disp':True})
+        print('fit: d {}, gp {}, gi {}'.format(d_fit, gp_fit, gi_fit))
+        model_param_fit = {
+                'inertia'  : model_param['inertia'],
+                'damping'  : model_param['inertia']*d_fit,
+                'pro_gain' : model_param['inertia']*gp_fit,
+                'int_gain' : model_param['inertia']*gi_fit,
+                'int_leak' : 0.0, 
+                'noise'    : 0.0,
+                }
+
+    if 0:
+        d_fit, gp_fit, gi_fit, c_fit, fit_info = sys_id_utils.fit_lpi_yaw_model(t, input_sig, output_sig, op_param={'disp':True})
+        print('fit: d {}, gp {}, gi {}, c {}'.format(d_fit, gp_fit, gi_fit, c_fit))
+        model_param_fit = {
+                'inertia'  : model_param['inertia'],
+                'damping'  : model_param['inertia']*d_fit,
+                'pro_gain' : model_param['inertia']*gp_fit,
+                'int_gain' : model_param['inertia']*gi_fit,
+                'int_leak' : c_fit, 
+                'noise'    : 0.0,
+                }
+
+
     ss_model_fit = sys_id_utils.create_lpi_ss_model(model_param_fit)
     f_fit = f_model
     with warnings.catch_warnings():

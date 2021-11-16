@@ -1,6 +1,33 @@
 import numpy as np
 import scipy.signal
 
+def create_p_ss_model(model_param):
+    I  = model_param['inertia']
+    d  = model_param['damping']
+    gp = model_param['pro_gain']
+    A = np.array([[-(d + gp)/I]])
+    B = np.array([[gp/I]])
+    C = np.array([[1.0]])
+    D = np.array([[0.0]])
+    sys = scipy.signal.StateSpace(A,B,C,D)
+    return sys
+
+def create_pi_ss_model(model_param):
+    I  = model_param['inertia']
+    d  = model_param['damping']
+    gp = model_param['pro_gain']
+    gi = model_param['int_gain']
+    if np.isclose(gi,0.0):
+        sys = create_p_ss_model(model_param)
+    else:
+        A = np.array([[-(d + gp)/I, gi/I], [-1.0, 0.0]])
+        B = np.array([[gp/I], [1.0]])
+        C = np.array([[1.0, 0.0]])
+        D = np.array([[0.0]])
+        sys = scipy.signal.StateSpace(A,B,C,D)
+    return sys
+
+
 def create_lpi_ss_model(model_param):
     """
     Creates a state space model LPI yaw dynamics model 
@@ -10,11 +37,14 @@ def create_lpi_ss_model(model_param):
     gp = model_param['pro_gain']
     gi = model_param['int_gain']
     b  = model_param['int_leak']
-    A = np.array([[-(d + gp)/I, gi/I], [-1.0, -b]])
-    B = np.array([[gp/I], [1.0]])
-    C = np.array([[1.0, 0.0]])
-    D = np.array([[0.0]])
-    sys = scipy.signal.StateSpace(A,B,C,D)
+    if np.isclose(gi,0.0):
+        sys = create_p_ss_model(model_param)
+    else:
+        A = np.array([[-(d + gp)/I, gi/I], [-1.0, -b]])
+        B = np.array([[gp/I], [1.0]])
+        C = np.array([[1.0, 0.0]])
+        D = np.array([[0.0]])
+        sys = scipy.signal.StateSpace(A,B,C,D)
     return sys
 
 
