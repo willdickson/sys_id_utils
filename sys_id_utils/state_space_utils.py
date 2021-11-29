@@ -31,6 +31,7 @@ def fit_p_yaw_model(t, inp_sig, out_sig, method='min', op_param=None):
         sys = simulate.create_p_ss_model(model_param)
         _, out_sig_sim, state_signal = sp.signal.lsim(sys, inp_sig, t, X0=np.array([out_sig[0]]))
         cost = ((out_sig - out_sig_sim)**2).sum()
+        print(cost)
         return cost
 
     constraints = sp.optimize.LinearConstraint(np.eye(2), np.zeros((2,)), np.full((2,), np.inf))

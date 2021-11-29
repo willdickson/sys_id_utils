@@ -4,18 +4,18 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import sys_id_utils
 
-num_pts = 2000 
+num_pts = 5000 
 t0 = 0.0   # Start time
 t1 = 20.0  # End time
 
 # Yaw dynamics + controller model parameters
 model_param = {
         'inertia'  : 1.0,
-        'damping'  : 1.0,
-        'pro_gain' : 10.0,
-        'int_gain' : 0.0,
-        'int_leak' : 0.0, 
-        'noise'    : 0.1,
+        'damping'  : 0.0,
+        'pro_gain' : 5.0,
+        'int_gain' : 20.0,
+        'int_leak' : 1.0, 
+        'noise'    : 1.1,
         }
 
 # Input signal parameters for chirp function
@@ -34,7 +34,7 @@ input_param_step = {
         't_step'      :  10.0,  
         }
 
-nperseg = num_pts/8 # Number of points per segment for power spectral density calculation
+nperseg = num_pts/4 # Number of points per segment for power spectral density calculation
 f_cutoff = 8.0      # Cut off frequency for analysis
 
 fit = True  # If True fits parametric model of transfer function to frequency response
@@ -55,7 +55,7 @@ with warnings.catch_warnings():
 
 # Fit state space models
 if fit:
-    if 1:
+    if 0:
         d_fit, gp_fit, fit_info = sys_id_utils.fit_p_yaw_model(t, input_sig, output_sig, op_param={'disp':True})
         print('fit: d {}, gp {}'.format(d_fit, gp_fit))
         model_param_fit = {
@@ -78,7 +78,7 @@ if fit:
                 'noise'    : 0.0,
                 }
 
-    if 0:
+    if 1:
         d_fit, gp_fit, gi_fit, c_fit, fit_info = sys_id_utils.fit_lpi_yaw_model(t, input_sig, output_sig, op_param={'disp':True})
         print('fit: d {}, gp {}, gi {}, c {}'.format(d_fit, gp_fit, gi_fit, c_fit))
         model_param_fit = {
