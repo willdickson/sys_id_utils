@@ -4,5 +4,4 @@
 *.hdf5
 *.avi
 *.egg-info
-fponce*
 fly_example_data*
